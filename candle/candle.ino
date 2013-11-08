@@ -8,16 +8,18 @@
   
   Circuit
   ------------------------------------------------
-  LED connected between pin 9 and ground.
+  LED connected between pins and ground.
   BUTTON connected between pin 2 and +5V.
   10K resistor connected between pin 2 and ground.
   
 */
 
-const int LED0 = 9;  // 0 for ATTiny45
+#define LEDCOUNT 3
+
+const int LED[] = {9, 10, 11};
 const int BUTTON0 = 2;  // Need to pull this down with a 10K resistor.
 
-byte brightness0 = 128;
+byte brightness[] = {128, 128, 128};
 byte brightnessMin = 128;
 byte brightnessMax = 255;
 char stepMin = -40;
@@ -29,7 +31,10 @@ boolean isOff = false;
 
 void setup()
 {
-  pinMode(LED0, OUTPUT);
+  for(int i = 0; i < LEDCOUNT; i++)
+  {
+    pinMode(LED[i], OUTPUT);
+  }
   pinMode(BUTTON0, INPUT);
   
   // Initialize the random number generator to be a bit more random.
@@ -57,8 +62,11 @@ void loop()
     // Set a new brightness which differs from the old brightness by a random
     // number between stepMin and stepMax and where the new brightness is 
     // constrained to be between brightnessMin and brightnessMax.
-    brightness0 = constrain(brightness0 + random(stepMin, stepMax), brightnessMin, brightnessMax);
-    analogWrite(LED0, brightness0);
+    for(int i = 0; i < LEDCOUNT; i++)
+    {
+      brightness[i] = constrain(brightness[i] + random(stepMin, stepMax), brightnessMin, brightnessMax);
+      analogWrite(LED[i], brightness[i]);
+    }
     
     // Here we're checking to see if the button was ever pressed.
     if (buttonPressTime == 0)
@@ -83,7 +91,10 @@ void loop()
       // of time elapsed since then is more than our powerDownTime.  If so,
       // we'll need to set the candle to "off" and turn off the LED.
       isOff = true;
-      analogWrite(LED0, 0);
+      for (int i = 0; i < LEDCOUNT; i++)
+      {
+        analogWrite(LED[i], 0);
+      }
     }    
   }
 
